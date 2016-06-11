@@ -17,6 +17,7 @@
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSData.h>
 #import <Foundation/NSError.h>
+#import <Foundation/NSURL.h>
 
 namespace ID
 {
@@ -88,5 +89,34 @@ namespace ID
 			Throw<Exception> e;
 			e << "Error removing file system object " << path << ": " << [[error description] UTF8String];
 		}
+	}
+
+	FSAttributes fileAttributes(std::string const & path)
+	{
+		if (path.empty())
+			throw Exception("Can not get attributes for file system object with empty path");
+		NSFileManager * manager = [NSFileManager defaultManager];
+		NSError * error = nullptr;
+		FSAttributes attributes = {};
+		NSDictionary * attributeDict = [manager attributesOfItemAtPath:
+			[NSString stringWithUTF8String:path.c_str()] error:&error];
+		if (attributeDict && !error)
+		{
+			attributes.exists = true;
+			attributes.fileSystemNumber = [attributeDict[NSFileSystemNumber] unsignedLongLongValue];
+			attributes.fileSystemFileNumber = [attributeDict[NSFileSystemFileNumber] unsignedLongLongValue];
+		}
+		return attributes;
+	}
+
+	std::string fileBookmark(std::string const & path)
+	{
+		if (path.empty())
+			throw Exception("Can not get a bookmark for file system object with empty path");
+		NSURL * url = [[NSURL alloc] initFileURLWithFileSystemRepresentation:path.c_str() isDirectory:NO relativeToURL:nil];
+		NSData * bookmarkData = [url bookmarkDataWithOptions:NSURLBookmarkCreationMinimalBookmark
+			includingResourceValuesForKeys:[NSArray array] relativeToURL:nil error:nil];
+		std::string bookmark(reinterpret_cast<char const *>(bookmarkData.bytes), bookmarkData.length);
+		return bookmark;
 	}
 }

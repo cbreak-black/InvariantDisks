@@ -22,6 +22,17 @@ namespace ID
 	void createFile(std::string const & path);
 	void createSymlink(std::string const & link, std::string const & target);
 	void removeFSObject(std::string const & path);
+
+	struct FSAttributes
+	{
+		bool exists;
+		uint64_t fileSystemNumber;
+		uint64_t fileSystemFileNumber;
+	};
+
+	FSAttributes fileAttributes(std::string const & path);
+
+	std::string fileBookmark(std::string const & path);
 }
 
 #endif
