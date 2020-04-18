@@ -71,7 +71,7 @@ namespace ID
 
 	void SerialLinker::diskAppeared(DADiskRef disk, DiskInformation const & di)
 	{
-		if (isDevice(di))
+		if (isDevice(di) && isRealDevice(di))
 		{
 			addLinkForDisk(formatSerialPath(di), di);
 		}

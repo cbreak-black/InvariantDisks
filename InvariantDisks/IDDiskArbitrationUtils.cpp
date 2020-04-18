@@ -15,6 +15,7 @@
 #include <IOKit/storage/IOStorageProtocolCharacteristics.h>
 
 #include <sstream>
+#include <regex>
 
 namespace ID
 {
@@ -244,6 +245,14 @@ namespace ID
 	bool isWhole(DiskInformation const & di)
 	{
 		return di.mediaWhole;
+	}
+
+	bool isRealDevice(DiskInformation const & di)
+	{
+		// Check if the MediaPath is in 'IODeviceTree:/', since this seems to
+		// work to reject APFS container.
+		static std::regex const devicePattern("^IODeviceTree:/.*$");
+		return std::regex_match(di.mediaPath, devicePattern);
 	}
 
 	std::string partitionSuffix(DiskInformation const & di)

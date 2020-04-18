@@ -51,6 +51,7 @@ namespace ID
 
 	bool isDevice(DiskInformation const & di);
 	bool isWhole(DiskInformation const & di);
+	bool isRealDevice(DiskInformation const & di);
 	std::string partitionSuffix(DiskInformation const & di);
 
 	std::ostream & operator<<(std::ostream & os, DADiskRef disk);
